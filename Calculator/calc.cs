@@ -16,6 +16,7 @@ namespace Calculator
 
         //=======================================================================================
         #region error handling
+        // this region contains error handeling
 
         private const string ErrorCannotDivideByZero = "Cannot divide by zero.";
 
