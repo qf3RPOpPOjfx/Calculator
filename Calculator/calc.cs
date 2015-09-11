@@ -388,9 +388,7 @@ namespace Calculator
                         return d.ToString();
                     }
                     else
-                    {
                         throw new Exception("cannot calculate square root of negative number");
-                    }
 
             }
         }
@@ -449,54 +447,66 @@ namespace Calculator
         {
             decimal result = 0M;
 
-            switch (ds)
+            try
             {
-                case DisplayStatus.number:
 
-                    result = Convert.ToDecimal(FormulaElements[0]);
+                switch (ds)
+                {
+                    case DisplayStatus.number:
 
-                    for (int i=1; i < FormulaElements.Count(); i=i+2)
-                    {
-                        switch ((Operators)FormulaElements[i])
+                        result = Convert.ToDecimal(FormulaElements[0]);
+
+                        for (int i = 1; i < FormulaElements.Count(); i = i + 2)
                         {
-                            case Operators.plus:
-                                result = result + Convert.ToDecimal(FormulaElements[i+1]);
-                                break;
-                            case Operators.minus:
-                                result = result - Convert.ToDecimal(FormulaElements[i + 1]);
-                                break;
-                            case Operators.multiply:
-                                result = result * Convert.ToDecimal(FormulaElements[i + 1]);
-                                break;
-                            case Operators.divide:
-                                result = result / Convert.ToDecimal(FormulaElements[i + 1]);
-                                break;
-                            default:
-                                result = 0;
-                                break;
+                            decimal number = Convert.ToDecimal(FormulaElements[i + 1]);
+
+                            switch ((Operators)FormulaElements[i])
+                            {
+                                case Operators.plus:
+                                    result = result + number;
+                                    break;
+                                case Operators.minus:
+                                    result = result - number;
+                                    break;
+                                case Operators.multiply:
+                                    result = result * number;
+                                    break;
+                                case Operators.divide:
+                                    result = result / number;
+                                    break;
+
+                                default:
+                                    result = 0;
+                                    break;
+                            }
                         }
-                    }
 
-                    FormulaElements.Clear();
-                    FormulaElements.Add(result);
-                    ds = DisplayStatus.result;
-                    return result.ToString();
+                        FormulaElements.Clear();
+                        FormulaElements.Add(result);
+                        ds = DisplayStatus.result;
+                        return result.ToString();
 
-                case DisplayStatus.operatorX:
-                    return OperatorToString((Operators)FormulaElements.Last());
+                    case DisplayStatus.operatorX:
+                        return OperatorToString((Operators)FormulaElements.Last());
 
-                case DisplayStatus.decimalMark:
-                    return FormulaElements.Last().ToString();
+                    case DisplayStatus.decimalMark:
+                        return FormulaElements.Last().ToString();
 
-                case DisplayStatus.result:
-                    return FormulaElements.Last().ToString();
+                    case DisplayStatus.result:
+                        return FormulaElements.Last().ToString();
 
-                case DisplayStatus.clear:
-                case DisplayStatus.error:
-                default:
-                    return "0";
+                    case DisplayStatus.clear:
+                    case DisplayStatus.error:
+                    default:
+                        return "0";
+                }
             }
-
+            catch (System.DivideByZeroException)
+            {
+                Clear();
+                ds = DisplayStatus.error;
+                return "Cannot divide by zero";
+            }
         }
 
         //---------------------------------------------------------------------------------------
