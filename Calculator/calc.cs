@@ -368,28 +368,37 @@ namespace Calculator
 
         public string SquareRoot()
         {
-            switch (ds)
+            try
             {
-                case DisplayStatus.clear:
-                case DisplayStatus.error:
-                case DisplayStatus.operatorX:
-                default:
-                    return Clear();
+                switch (ds)
+                {
+                    case DisplayStatus.clear:
+                    case DisplayStatus.error:
+                    case DisplayStatus.operatorX:
+                    default:
+                        return Clear();
 
-                case DisplayStatus.number:
-                case DisplayStatus.decimalMark:
-                case DisplayStatus.result:
-                    decimal d = Convert.ToDecimal(FormulaElements.Last());
-                    if (d>=0)
-                    { 
-                        d = Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(d)));
-                        FormulaElements.Remove(FormulaElements.Last());
-                        FormulaElements.Add(d);
-                        return d.ToString();
-                    }
-                    else
-                        throw new Exception("cannot calculate square root of negative number");
+                    case DisplayStatus.number:
+                    case DisplayStatus.decimalMark:
+                    case DisplayStatus.result:
+                        decimal d = Convert.ToDecimal(FormulaElements.Last());
+                        if (d >= 0)
+                        {
+                            d = Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(d)));
+                            FormulaElements.Remove(FormulaElements.Last());
+                            FormulaElements.Add(d);
+                            return d.ToString();
+                        }
+                        else
+                            throw new Exception("cannot calculate square root of negative number");
 
+                }
+            }
+            catch(Exception e)
+            {
+                Clear();
+                ds = DisplayStatus.error;
+                return e.Message;
             }
         }
 
