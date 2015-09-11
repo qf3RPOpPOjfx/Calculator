@@ -403,9 +403,11 @@ namespace Calculator
             }
             catch(Exception e)
             {
-                Clear();
-                ds = DisplayStatus.error;
-                return e.Message;
+                Console.WriteLine("x");
+                throw e;
+                //Clear();
+                //ds = DisplayStatus.error;
+                //return e.Message;
             }
         }
 

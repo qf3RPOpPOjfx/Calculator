@@ -21,6 +21,13 @@ namespace Calculator
             UpdateResult("0");
         }
 
+        private void ExceptionHandling(Exception e)
+        {
+            c.Clear();
+            txtResult.Text = e.Message;
+            txtFormula.Text = "";
+        }
+
 
         private void UpdateResult(string result)
         {
@@ -31,63 +38,75 @@ namespace Calculator
             }
             catch (Exception e)
             {
-                c.Clear();
-                txtResult.Text = e.Message;
-                txtFormula.Text = "";
+                ExceptionHandling(e);
             }
         }
 
         //==================================
         #region buttonclick events Digits
         //==================================
+        private void AddDigit(decimal d)
+        {
+            try
+            { 
+                string result = c.AddDigit(d);
+                UpdateResult(result);
+            }
+            catch (Exception e)
+            {
+                ExceptionHandling(e);
+            }
+
+        }
+
         private void btn1_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(1M));
+            AddDigit(1m);
         }
 
         private void btn2_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(2M));
+            AddDigit(2m);
         }
 
         private void btn3_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(3M));
+            AddDigit(3m);
         }
 
         private void btn4_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(4M));
+            AddDigit(4m);
         }
 
         private void btn5_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(5M));
+            AddDigit(5m);
         }
 
         private void btn6_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(6M));
+            AddDigit(6m);
         }
 
         private void btn7_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(7M));
+            AddDigit(7m);
         }
 
         private void btn8_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(8M));
+            AddDigit(8m);
         }
 
         private void btn9_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(9M));
+            AddDigit(9m);
         }
 
         private void btn0_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.AddDigit(0M));
+            AddDigit(0m);
         }
         //==================================
         #endregion
@@ -96,24 +115,37 @@ namespace Calculator
         //==================================
         #region buttonclick events Operators
         //==================================
+        private void Operator(calc.Operators o)
+        {
+            try
+            { 
+                string result = c.Operator(o);
+                UpdateResult(result);
+            }
+            catch (Exception e)
+            {
+                ExceptionHandling(e);
+            }
+        }
+
         private void btnPlus_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.Operator(global::Calculator.calc.Operators.plus));
+            Operator(calc.Operators.plus);
         }
 
         private void btnMinus_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.Operator(global::Calculator.calc.Operators.minus));
+            Operator(calc.Operators.minus);
         }
 
         private void btnMultiply_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.Operator(global::Calculator.calc.Operators.multiply));
+            Operator(calc.Operators.multiply);
         }
 
         private void btnDivide_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.Operator(global::Calculator.calc.Operators.divide));
+            Operator(calc.Operators.divide);
         }
         //==================================
         #endregion
