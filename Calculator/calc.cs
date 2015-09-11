@@ -43,7 +43,6 @@ namespace Calculator
 
                 case DisplayStatus.number:
                     FormulaElements.Remove(FormulaElements.Last());
-                    FormulaElements.Remove(FormulaElements.Last());
                     if (d1 % 1==0)
                     {
                         if (d1 > 0)
@@ -51,17 +50,16 @@ namespace Calculator
                         else
                             FormulaElements.Add((d1 * 10M) - d);
 
-                        DecimalCount = 0;
                         s = FormulaElements.Last().ToString();
                     }
                     else
                     {
                         if (d1 > 0)
-                            FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, DecimalCount)))));
+                            FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d1))))));
                         else
-                            FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, DecimalCount)))));
+                            
+                            FormulaElements.Add(d1 - (d / (10 * System.Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d1))))));
 
-                        DecimalCount++;
                         if (d == 0)
                             s = FormulaElements.Last().ToString() + "0";
                         else
@@ -76,8 +74,11 @@ namespace Calculator
 
                 case DisplayStatus.decimalMark:
                     FormulaElements.Remove(FormulaElements.Last());
-                    FormulaElements.Add(d1 + (d / 10));
-                    DecimalCount++;
+                    if (d1 >= 0)
+                        FormulaElements.Add(d1 + (d / 10));
+                    else
+                        FormulaElements.Add(d1 - (d / 10));
+
                     s = FormulaElements.Last().ToString();
                     break;
 
@@ -93,17 +94,25 @@ namespace Calculator
             return s;
         }
 
-        private int DecimalCount;
-
         private int GetDecimalCount(decimal d)
         {
 
             int decimalCount = 0;
-            while (d != Math.Floor(d))
+            if (d > 0)
             {
-                d = (d - Math.Floor(d)) * 10;
-                decimalCount++;
+                while (d != Math.Floor(d))
+                {
+                    d = (d - Math.Floor(d)) * 10;
+                    decimalCount++;
+                }
             }
+            else
+                while (d != Math.Ceiling(d))
+                {
+                    d = (d - Math.Ceiling(d)) * 10;
+                    decimalCount++;
+                }
+
             return decimalCount;
         }
 
@@ -113,7 +122,6 @@ namespace Calculator
         {
             decimal d;
             string s = "";
-            DecimalCount = 0;
 
             switch (ds)
             {
@@ -183,8 +191,9 @@ namespace Calculator
             switch (ds)
             {
                 case DisplayStatus.number:
+                case DisplayStatus.result:
 
-                    if (DecimalCount == 0)
+                    if (GetDecimalCount(d) == 0)
                         if (d >= 0)
                             d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
                         else
@@ -206,7 +215,6 @@ namespace Calculator
                     ds = DisplayStatus.number;
                     return d.ToString();
 
-                case DisplayStatus.result:
                 case DisplayStatus.decimalMark:
                     return d.ToString();
 
@@ -251,7 +259,6 @@ namespace Calculator
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.decimalMark:
-                    DecimalCount = 0;
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.result:
@@ -312,7 +319,7 @@ namespace Calculator
                     return ErrorCannotDivideByZero;
 
                 case DisplayStatus.operatorX:
-                    return OperatorToString(FormulaElements.Last());
+                    return OperatorToString((Operators)FormulaElements.Last());
 
                 case DisplayStatus.error:
                     return "";
@@ -335,12 +342,13 @@ namespace Calculator
                 case DisplayStatus.decimalMark:
                     decimal d = Convert.ToDecimal(FormulaElements.Last());
                     int i = FormulaElements.OfType<decimal>().Count();
+                    int k = FormulaElements.Count();
 
                     if (i < 2) 
                         return Clear();
                     else
                     {
-                        d = num[i - 2] * (d / 100);
+                        d = Convert.ToDecimal(FormulaElements[k - 2]) * (d / 100);
                         FormulaElements.Remove(FormulaElements.Last());
                         FormulaElements.Add(d);
                         return Calculate();
@@ -370,10 +378,17 @@ namespace Calculator
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.result:
                     decimal d = Convert.ToDecimal(FormulaElements.Last());
-                    d = Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(d)));
-                    FormulaElements.Remove(FormulaElements.Last());
-                    FormulaElements.Add(d);
-                    return d.ToString();
+                    if (d>=0)
+                    { 
+                        d = Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(d)));
+                        FormulaElements.Remove(FormulaElements.Last());
+                        FormulaElements.Add(d);
+                        return d.ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("cannot calculate square root of negative number");
+                    }
 
             }
         }
@@ -394,6 +409,8 @@ namespace Calculator
                     return _Plus;
                 case Operators.minus:
                     return _Minus;
+                case Operators.multiply:
+                    return _Multiply;
                 case Operators.divide:
                     return _Divide;
                 case Operators.percentage:
@@ -490,7 +507,6 @@ namespace Calculator
         {
             FormulaElements.Clear();
             ds = DisplayStatus.clear;
-            DecimalCount = 0;
             return "0";
         }
 
@@ -589,10 +605,12 @@ namespace Calculator
                 case DisplayStatus.error:
                     if (FormulaElements.OfType<decimal>().Any()) FormulaElements.Remove(FormulaElements.Last());
                     FormulaElements.Add(d);
+                    ds = DisplayStatus.number;
                     return d.ToString();
 
                 case DisplayStatus.operatorX:
                     FormulaElements.Add(d);
+                    ds = DisplayStatus.number;
                     return d.ToString();
                 default:
                     return "error";
