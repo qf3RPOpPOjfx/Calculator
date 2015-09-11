@@ -199,11 +199,12 @@ namespace Calculator
                         else
                             d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
                     else
-                    {
+                    { 
                         if (d > 0)
-                            d = d - (d - (Math.Floor(d * Convert.ToDecimal(Math.Pow(10, 4 - 1))) / (Convert.ToDecimal(Math.Pow(10, 4 - 1)))));
+                            d = Math.Floor(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
                         else
-                            d = d - (d - (Math.Floor(d * Convert.ToDecimal(Math.Pow(-10, 4 - 1))) / (Convert.ToDecimal(Math.Pow(-10, 4 - 1)))));
+                            d = Math.Ceiling(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+                            
                     }
 
                     FormulaElements.Remove(FormulaElements.Last());
