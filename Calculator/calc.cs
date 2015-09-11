@@ -16,7 +16,6 @@ namespace Calculator
 
         //=======================================================================================
         #region error handling
-        // this region contains error handeling
 
         private const string ErrorCannotDivideByZero = "Cannot divide by zero.";
 
@@ -25,8 +24,6 @@ namespace Calculator
 
         //=======================================================================================
         #region Number input
-
-        private List<decimal> num = new List<decimal>();
         
         public string AddDigit(decimal d)
         {
@@ -34,76 +31,60 @@ namespace Calculator
             string s="";
             decimal d1 = 0M;
 
-            if (num.Any()) d1 = num.Last();
+            if (FormulaElements.OfType<decimal>().Any()) d1 = Convert.ToDecimal(FormulaElements.Last());
 
             switch (ds)
             {
                 case DisplayStatus.clear:
                 case DisplayStatus.error:
-                    num.Add(d);
                     FormulaElements.Add(d);
-                    s = num.Last().ToString();
+                    s = FormulaElements.Last().ToString();
                     break;
 
                 case DisplayStatus.number:
-                    num.Remove(num.Last());
-                    FormulaElements.Remove(num.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     if (d1 % 1==0)
                     {
                         if (d1 > 0)
-                        {
-                            num.Add((d1 * 10M) + d);
                             FormulaElements.Add((d1 * 10M) + d);
-                        }
                         else
-                        { 
-                            num.Add((d1 * 10M) - d);
                             FormulaElements.Add((d1 * 10M) - d);
-                        }
+
                         DecimalCount = 0;
-                        s = num.Last().ToString();
+                        s = FormulaElements.Last().ToString();
                     }
                     else
                     {
                         if (d1 > 0)
-                        {
-                            num.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, DecimalCount)))));
                             FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, DecimalCount)))));
-                        }
                         else
-                        { 
-                            num.Add(d1 - (d / (10 * System.Convert.ToDecimal(Math.Pow(10, DecimalCount)))));
                             FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, DecimalCount)))));
-                        }
+
                         DecimalCount++;
                         if (d == 0)
-                            s = num.Last().ToString() + "0";
+                            s = FormulaElements.Last().ToString() + "0";
                         else
-                            s = num.Last().ToString();
+                            s = FormulaElements.Last().ToString();
                     }
                     break;
 
                 case DisplayStatus.operatorX:
-                    num.Add(d);
                     FormulaElements.Add(d);
-                    s = num.Last().ToString();
+                    s = FormulaElements.Last().ToString();
                     break;
 
                 case DisplayStatus.decimalMark:
-                    num.Remove(num.Last());
-                    num.Add(d1 + (d / 10));
-                    FormulaElements.Remove(num.Last());
-                    FormulaElements.Add(d);
+                    FormulaElements.Remove(FormulaElements.Last());
+                    FormulaElements.Add(d1 + (d / 10));
                     DecimalCount++;
-                    s = num.Last().ToString();
+                    s = FormulaElements.Last().ToString();
                     break;
 
                 case DisplayStatus.result:
-                    num.Clear();
-                    num.Add(d);
                     FormulaElements.Clear();
                     FormulaElements.Add(d);
-                    s = num.Last().ToString();
+                    s = FormulaElements.Last().ToString();
                     break;
             }
 
@@ -142,21 +123,21 @@ namespace Calculator
                     s = d.ToString() + DecimalMark;
                     break;
                 case DisplayStatus.number:
-                    d = num.Last();
+                    d = Convert.ToDecimal(FormulaElements.Last());
                     s = d.ToString() + DecimalMark;
                     break;
                 case DisplayStatus.operatorX:
                     d = 0M;
-                    num.Add(d);
+                    FormulaElements.Add(d);
                     s = d.ToString() + DecimalMark;
                     break;
                 case DisplayStatus.decimalMark:
-                    d = num.Last();
+                    d = Convert.ToDecimal(FormulaElements.Last());
                     s = d.ToString();
                     break;
                 case DisplayStatus.result:
                     d = 0M;
-                    num.Add(d);
+                    FormulaElements.Add(d);
                     s = d.ToString() + DecimalMark;
                     break;
             }
@@ -175,24 +156,17 @@ namespace Calculator
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.result:
                     decimal d;
-                    d = num.Last();
-                    num.Remove(num.Last());
-                    FormulaElements.Remove(num.Last());
+                    d = Convert.ToDecimal(FormulaElements.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
 
                     if (d >= 0)
-                    {
-                        num.Add(-d);
                         FormulaElements.Add(-d);
-                    }
                     else
-                    { 
-                        num.Add(Math.Abs(d));
                         FormulaElements.Add(Math.Abs(d));
-                    }
                     if (ds == DisplayStatus.decimalMark)
-                        return num.Last().ToString() + DecimalMark;
+                        return FormulaElements.Last().ToString() + DecimalMark;
                     else
-                        return num.Last().ToString();
+                        return FormulaElements.Last().ToString();
 
                 case DisplayStatus.clear:
                 case DisplayStatus.operatorX:
@@ -204,7 +178,7 @@ namespace Calculator
 
         public string BackSpace()
         {
-            decimal d = num.Last();
+            decimal d = Convert.ToDecimal(FormulaElements.Last());
 
             switch (ds)
             {
@@ -212,9 +186,9 @@ namespace Calculator
 
                     if (DecimalCount == 0)
                         if (d >= 0)
-                            d = Math.Floor(num.Last() / 10);
+                            d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
                         else
-                            d = Math.Ceiling(num.Last() / 10);
+                            d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
                     else
                     {
                         if (d > 0)
@@ -223,15 +197,12 @@ namespace Calculator
                             d = d - (d - (Math.Floor(d * Convert.ToDecimal(Math.Pow(-10, 4 - 1))) / (Convert.ToDecimal(Math.Pow(-10, 4 - 1)))));
                     }
 
-                    num.Remove(num.Last());
-                    num.Add(d);
-                    FormulaElements.Remove(num.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     FormulaElements.Add(d);
                     return d.ToString();
 
                 case DisplayStatus.operatorX:
-                    op.Remove(op.Last());
-                    FormulaElements.Remove(num.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     ds = DisplayStatus.number;
                     return d.ToString();
 
@@ -262,8 +233,6 @@ namespace Calculator
         private static string _Percentage = "%";
         private static string _SquareRoot = ((char)0x221A).ToString();
 
-        private List<Operators> op = new List<Operators>();
-
         public string Operator(Operators o)
         {
 
@@ -271,28 +240,21 @@ namespace Calculator
             {
                 case DisplayStatus.clear:
                 case DisplayStatus.error:
-                    num.Add(0M);
-                    op.Add(o);
                     FormulaElements.Add(0M);
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.number:
-                    op.Add(o);
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.operatorX:
-                    op.Remove(op.Last());
-                    op.Add(o);
-                    FormulaElements.Remove(op.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.decimalMark:
                     DecimalCount = 0;
-                    op.Add(o);
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.result:
-                    op.Add(o);
                     FormulaElements.Add(o);
                     break;
             }
@@ -335,7 +297,7 @@ namespace Calculator
 
         public string OneDivideByX()
         {
-            decimal d = num.Last();
+            decimal d = Convert.ToDecimal(FormulaElements.Last());
 
             if (d == 0)
             { 
@@ -350,7 +312,7 @@ namespace Calculator
                     return ErrorCannotDivideByZero;
 
                 case DisplayStatus.operatorX:
-                    return OperatorToString(op.Last());
+                    return OperatorToString(FormulaElements.Last());
 
                 case DisplayStatus.error:
                     return "";
@@ -358,7 +320,7 @@ namespace Calculator
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.number:
                 case DisplayStatus.result:
-                    return (1 / num.Last()).ToString();
+                    return (1 / Convert.ToDecimal(FormulaElements.Last())).ToString();
 
             }
 
@@ -371,17 +333,15 @@ namespace Calculator
             {
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
-                    decimal d = num.Last();
-                    int i = num.Count();
+                    decimal d = Convert.ToDecimal(FormulaElements.Last());
+                    int i = FormulaElements.OfType<decimal>().Count();
 
                     if (i < 2) 
                         return Clear();
                     else
                     {
                         d = num[i - 2] * (d / 100);
-                        num.Remove(num.Last());
-                        num.Add(d);
-                        FormulaElements.Remove(num.Last());
+                        FormulaElements.Remove(FormulaElements.Last());
                         FormulaElements.Add(d);
                         return Calculate();
                     }
@@ -409,11 +369,9 @@ namespace Calculator
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.result:
-                    decimal d = num.Last();
+                    decimal d = Convert.ToDecimal(FormulaElements.Last());
                     d = Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(d)));
-                    num.Remove(num.Last());
-                    num.Add(d);
-                    FormulaElements.Remove(num.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     FormulaElements.Add(d);
                     return d.ToString();
 
@@ -425,46 +383,6 @@ namespace Calculator
 
         //=======================================================================================
         #region Calculate functions
-
-        public string GetFormula()
-        {
-            string s = "";
-            int l = op.Count();
-
-            switch (ds)
-            {
-
-                case DisplayStatus.number:
-                case DisplayStatus.operatorX:
-                case DisplayStatus.decimalMark:
-                    if (num.Any())
-                    {
-                        for (int i = 0; i < num.Count(); i++)
-                        {
-
-                            if (s == "")
-                                s = s + " " + num[i].ToString();
-                            else
-                                s = s + " " + num[i].ToString();
-
-                            if (i < l)
-                            {
-                                s = s + " " + OperatorToString(op[i]);
-                            }
-                        }
-                        return s;
-                    }
-                    else
-                        return "";
-
-                case DisplayStatus.clear:
-                case DisplayStatus.result:
-                case DisplayStatus.error:
-                default:
-                    return "";
-
-            }
-        }
 
         private string GetFormulaSymbol(Operators op)
         {
@@ -493,83 +411,66 @@ namespace Calculator
             return enumVal;
         }
 
-        public string GetFormula2()
+        public string GetFormula()
         {
             string s = "";
 
-            foreach (var pair in FormulaElements)
+            foreach (var o in FormulaElements)
             {
-                if (pair.GetType() == typeof(decimal))
-                    s = s + " " + pair.ToString();
+                if (o.GetType() == typeof(decimal))
+                    s = s + " " + o.ToString();
                 else
-                    s = s + " " + GetFormulaSymbol(GetOperatorEnum<Operators>(pair));
+                    s = s + " " + GetFormulaSymbol(GetOperatorEnum<Operators>(o));
             }
             return s;
-
-            //{
-            //switch (pair.Key)
-            //{
-            //    case FormulaElementType.number:
-            //        s = s + numbers[pair.Value].ToString();
-            //        break;
-            //    case FormulaElementType.symbol:
-            //        s = s + symbols[pair.Value].ToString();
-            //        break;
-            //}
-            //}
-
 
         }
 
         public string Calculate()
         {
             decimal result = 0M;
-            int l = 0;
 
             switch (ds)
             {
                 case DisplayStatus.number:
-                    for (int i = 0; i < num.Count(); i++)
+
+                    result = Convert.ToDecimal(FormulaElements[0]);
+
+                    for (int i=1; i < FormulaElements.Count(); i=i+2)
                     {
-                        if (i == 0)
-                        {
-                            result = num[i];
-                            i++;
-                        }
-                        switch (op[l])
+                        switch ((Operators)FormulaElements[i])
                         {
                             case Operators.plus:
-                                result = result + num[i];
+                                result = result + Convert.ToDecimal(FormulaElements[i+1]);
                                 break;
                             case Operators.minus:
-                                result = result - num[i];
+                                result = result - Convert.ToDecimal(FormulaElements[i + 1]);
                                 break;
                             case Operators.multiply:
-                                result = result * num[i];
+                                result = result * Convert.ToDecimal(FormulaElements[i + 1]);
                                 break;
                             case Operators.divide:
-                                result = result / num[i];
+                                result = result / Convert.ToDecimal(FormulaElements[i + 1]);
                                 break;
                             default:
                                 result = 0;
                                 break;
                         }
-                        l++;
                     }
-                    num.Clear();
-                    op.Clear();
-                    num.Add(result);
+
+                    FormulaElements.Clear();
+                    FormulaElements.Add(result);
                     ds = DisplayStatus.result;
                     return result.ToString();
 
                 case DisplayStatus.operatorX:
-                    return OperatorToString(op.Last());
+                    return OperatorToString((Operators)FormulaElements.Last());
 
                 case DisplayStatus.decimalMark:
-                    return num.Last().ToString();
+                    return FormulaElements.Last().ToString();
 
                 case DisplayStatus.result:
-                    return num.Last().ToString();
+                    return FormulaElements.Last().ToString();
 
                 case DisplayStatus.clear:
                 case DisplayStatus.error:
@@ -587,8 +488,6 @@ namespace Calculator
 
         public string Clear()
         {
-            num.Clear();
-            op.Clear();
             FormulaElements.Clear();
             ds = DisplayStatus.clear;
             DecimalCount = 0;
@@ -601,20 +500,18 @@ namespace Calculator
             {
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
-                    if (num.Count() > 1)
+                    if (FormulaElements.OfType<decimal>().Count() > 1)
                         ds = DisplayStatus.operatorX;
                     else
                         ds = DisplayStatus.clear;
 
-                    num.Remove(num.Last());
-                    FormulaElements.Remove(num.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     return "0";
 
                 case DisplayStatus.operatorX:
-                    op.Remove(op.Last());
-                    FormulaElements.Remove(op.Last());
+                    FormulaElements.Remove(FormulaElements.Last());
                     ds = DisplayStatus.number;
-                    return num.Last().ToString();
+                    return FormulaElements.Last().ToString();
 
                 case DisplayStatus.clear:
                 case DisplayStatus.result:
@@ -648,7 +545,7 @@ namespace Calculator
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.result:
 
-                    if (num.Last() == 0m)
+                    if (Convert.ToDecimal(FormulaElements.Last()) == 0m)
                     {
                         mem = 0;
                         return false;
@@ -658,13 +555,13 @@ namespace Calculator
                         switch (mf)
                         {
                             case memorySaveMode.save:
-                                mem = num.Last();
+                                mem = Convert.ToDecimal(FormulaElements.Last());
                                 return true;
                             case memorySaveMode.plus:
-                                mem = mem + num.Last();
+                                mem = mem + Convert.ToDecimal(FormulaElements.Last());
                                 return true;
                             case memorySaveMode.minus:
-                                mem = mem - num.Last();
+                                mem = mem - Convert.ToDecimal(FormulaElements.Last());
                                 return true;
                             default:
                                 return true;
@@ -690,15 +587,11 @@ namespace Calculator
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.number:
                 case DisplayStatus.error:
-
-                    if (num.Any()) num.Remove(num.Last());
-                    if (FormulaElements.Any()) FormulaElements.Remove(num.Last());
-                    num.Add(d);
+                    if (FormulaElements.OfType<decimal>().Any()) FormulaElements.Remove(FormulaElements.Last());
                     FormulaElements.Add(d);
                     return d.ToString();
 
                 case DisplayStatus.operatorX:
-                    num.Add(d);
                     FormulaElements.Add(d);
                     return d.ToString();
                 default:

@@ -1,0 +1,15 @@
+User Interface
+--------------
+input: numbers and operators
+output: numbers, operators, formula, result, memory status, errors
+
+i/o
+--------------
+handle input
+store formula
+
+calculate
+--------------
+formula
+parse formula
+calculate
