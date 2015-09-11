@@ -341,18 +341,19 @@ namespace Calculator
             {
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
+
                     decimal d = Convert.ToDecimal(FormulaElements.Last());
                     int i = FormulaElements.OfType<decimal>().Count();
-                    int k = FormulaElements.Count();
 
                     if (i < 2) 
                         return Clear();
                     else
                     {
-                        d = Convert.ToDecimal(FormulaElements[k - 2]) * (d / 100);
+                        decimal d2 = Convert.ToDecimal(FormulaElements[FormulaElements.Count() - 3]);
+                        d = d2 * d / 100;
                         FormulaElements.Remove(FormulaElements.Last());
                         FormulaElements.Add(d);
-                        return Calculate();
+                        return d.ToString();
                     }
 
                 case DisplayStatus.clear:
