@@ -274,25 +274,32 @@ namespace Calculator
 
         private string OperatorToString(Operators o)
         {
-            switch (o)
+            try
+            { 
+                switch (o)
+                {
+                    case Operators.plus:
+                        return _Plus;
+                    case Operators.minus:
+                        return _Minus;
+                    case Operators.multiply:
+                        return _Multiply;
+                    case Operators.divide:
+                        return _Divide;
+                    case Operators.equals:
+                        return _Equals;
+                    case Operators.percentage:
+                        return _Percentage;
+                    case Operators.squareRoot:
+                        return _SquareRoot;
+                    default:
+                        throw new NotImplementedException
+                            ("Unrecognized Operator value.");
+                }
+            }
+            catch (NotImplementedException e)
             {
-                case Operators.plus:
-                    return _Plus;
-                case Operators.minus:
-                    return _Minus;
-                case Operators.multiply:
-                    return _Multiply;
-                case Operators.divide:
-                    return _Divide;
-                case Operators.equals:
-                    return _Equals;
-                case Operators.percentage:
-                    return _Percentage;
-                case Operators.squareRoot:
-                    return _SquareRoot;
-                default:
-                    throw new NotImplementedException
-                        ("Unrecognized Operator value.");
+                return e.Message;
             }
 
         }

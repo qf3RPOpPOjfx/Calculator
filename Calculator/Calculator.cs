@@ -24,8 +24,17 @@ namespace Calculator
 
         private void UpdateResult(string result)
         {
-            txtResult.Text = result;
-            txtFormula.Text = c.GetFormula();
+            try
+            {
+                txtResult.Text = result;
+                txtFormula.Text = c.GetFormula();
+            }
+            catch (Exception e)
+            {
+                c.Clear();
+                txtResult.Text = e.Message;
+                txtFormula.Text = "";
+            }
         }
 
         //==================================
