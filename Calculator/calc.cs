@@ -201,59 +201,6 @@ namespace Calculator
             }
         }
 
-        public string BackSpace()
-        {
-            decimal d = Convert.ToDecimal(FormulaElements.Last());
-
-            try
-            { 
-                switch (ds)
-                {
-                    case DisplayStatus.number:
-                    case DisplayStatus.result:
-
-                        if (GetDecimalCount(d) == 0)
-                            if (d >= 0)
-                                d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
-                            else
-                                d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
-                        else
-                        { 
-                            if (d > 0)
-                                d = Math.Floor(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
-                            else
-                                d = Math.Ceiling(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
-                            
-                        }
-
-                        FormulaElements.Remove(FormulaElements.Last());
-                        FormulaElements.Add(d);
-                        return d.ToString();
-
-                    case DisplayStatus.operatorX:
-                        FormulaElements.Remove(FormulaElements.Last());
-                        ds = DisplayStatus.number;
-                        return d.ToString();
-
-                    case DisplayStatus.decimalMark:
-                        return d.ToString();
-
-                    case DisplayStatus.clear:
-                    case DisplayStatus.error:
-                        return FormulaElements.Last().ToString();
-
-                    default:
-                        throw new NotImplementedException("Unrecognized display status");
-                }
-            }
-
-            catch (NotImplementedException e)
-            {
-                ExceptionHandling(e);
-                return null;
-            }
-        }
-
         //---------------------------------------------------------------------------------------
         #endregion
 
@@ -556,7 +503,7 @@ namespace Calculator
         #endregion
 
         //=======================================================================================
-        #region Clear functions
+        #region Clear and backspace functions
 
         public string Clear()
         {
@@ -590,6 +537,64 @@ namespace Calculator
                     case DisplayStatus.result:
                     case DisplayStatus.error:
                         return 0.ToString();
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
+            }
+
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return null;
+            }
+        }
+
+        public string BackSpace()
+        {
+
+            decimal d;
+            if (FormulaElements.OfType<decimal>().Any())
+                d = Convert.ToDecimal(FormulaElements.Last());
+            else
+                d = 0;
+
+            try
+            {
+                switch (ds)
+                {
+                    case DisplayStatus.number:
+                    case DisplayStatus.result:
+
+                        if (GetDecimalCount(d) == 0)
+                            if (d >= 0)
+                                d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
+                            else
+                                d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
+                        else
+                        {
+                            if (d > 0)
+                                d = Math.Floor(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+                            else
+                                d = Math.Ceiling(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+
+                        }
+
+                        FormulaElements.Remove(FormulaElements.Last());
+                        FormulaElements.Add(d);
+                        return d.ToString();
+
+                    case DisplayStatus.operatorX:
+                        FormulaElements.Remove(FormulaElements.Last());
+                        ds = DisplayStatus.number;
+                        return d.ToString();
+
+                    case DisplayStatus.decimalMark:
+                        return d.ToString();
+
+                    case DisplayStatus.clear:
+                    case DisplayStatus.error:
+                        return FormulaElements.Last().ToString();
 
                     default:
                         throw new NotImplementedException("Unrecognized display status");
