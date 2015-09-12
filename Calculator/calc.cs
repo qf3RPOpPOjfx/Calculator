@@ -19,12 +19,19 @@ namespace Calculator
 
         private const string ErrorCannotDivideByZero = "Cannot divide by zero.";
 
+        private void ExceptionHandling(Exception e)
+        {
+            Clear();
+            ds = DisplayStatus.error;
+            throw e;
+        }
+
         //---------------------------------------------------------------------------------------
         #endregion
 
         //=======================================================================================
         #region Number input
-        
+
         public string AddDigit(decimal d)
         {
 
@@ -157,30 +164,40 @@ namespace Calculator
 
         public string PlusMinus()
         {
+            try
+            { 
+                switch (ds)
+                {
+                    case DisplayStatus.number:
+                    case DisplayStatus.decimalMark:
+                    case DisplayStatus.result:
+                        decimal d;
+                        d = Convert.ToDecimal(FormulaElements.Last());
+                        FormulaElements.Remove(FormulaElements.Last());
 
-            switch (ds)
-            {
-                case DisplayStatus.number:
-                case DisplayStatus.decimalMark:
-                case DisplayStatus.result:
-                    decimal d;
-                    d = Convert.ToDecimal(FormulaElements.Last());
-                    FormulaElements.Remove(FormulaElements.Last());
+                        if (d >= 0)
+                            FormulaElements.Add(-d);
+                        else
+                            FormulaElements.Add(Math.Abs(d));
+                        if (ds == DisplayStatus.decimalMark)
+                            return FormulaElements.Last().ToString() + DecimalMark;
+                        else
+                            return FormulaElements.Last().ToString();
 
-                    if (d >= 0)
-                        FormulaElements.Add(-d);
-                    else
-                        FormulaElements.Add(Math.Abs(d));
-                    if (ds == DisplayStatus.decimalMark)
-                        return FormulaElements.Last().ToString() + DecimalMark;
-                    else
+                    case DisplayStatus.clear:
+                    case DisplayStatus.operatorX:
+                    case DisplayStatus.error:
                         return FormulaElements.Last().ToString();
+                    
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
+            }
 
-                case DisplayStatus.clear:
-                case DisplayStatus.operatorX:
-                case DisplayStatus.error:
-                default:
-                    return "";
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return null;
             }
         }
 
@@ -188,41 +205,52 @@ namespace Calculator
         {
             decimal d = Convert.ToDecimal(FormulaElements.Last());
 
-            switch (ds)
-            {
-                case DisplayStatus.number:
-                case DisplayStatus.result:
+            try
+            { 
+                switch (ds)
+                {
+                    case DisplayStatus.number:
+                    case DisplayStatus.result:
 
-                    if (GetDecimalCount(d) == 0)
-                        if (d >= 0)
-                            d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
+                        if (GetDecimalCount(d) == 0)
+                            if (d >= 0)
+                                d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
+                            else
+                                d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
                         else
-                            d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
-                    else
-                    { 
-                        if (d > 0)
-                            d = Math.Floor(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
-                        else
-                            d = Math.Ceiling(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+                        { 
+                            if (d > 0)
+                                d = Math.Floor(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+                            else
+                                d = Math.Ceiling(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
                             
-                    }
+                        }
 
-                    FormulaElements.Remove(FormulaElements.Last());
-                    FormulaElements.Add(d);
-                    return d.ToString();
+                        FormulaElements.Remove(FormulaElements.Last());
+                        FormulaElements.Add(d);
+                        return d.ToString();
 
-                case DisplayStatus.operatorX:
-                    FormulaElements.Remove(FormulaElements.Last());
-                    ds = DisplayStatus.number;
-                    return d.ToString();
+                    case DisplayStatus.operatorX:
+                        FormulaElements.Remove(FormulaElements.Last());
+                        ds = DisplayStatus.number;
+                        return d.ToString();
 
-                case DisplayStatus.decimalMark:
-                    return d.ToString();
+                    case DisplayStatus.decimalMark:
+                        return d.ToString();
 
-                case DisplayStatus.clear:
-                case DisplayStatus.error:
-                default:
-                    return "0";
+                    case DisplayStatus.clear:
+                    case DisplayStatus.error:
+                        return FormulaElements.Last().ToString();
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
+            }
+
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return null;
             }
         }
 
@@ -297,9 +325,11 @@ namespace Calculator
                             ("Unrecognized Operator value.");
                 }
             }
+
             catch (NotImplementedException e)
             {
-                return e.Message;
+                ExceptionHandling(e);
+                return null;
             }
 
         }
@@ -344,33 +374,43 @@ namespace Calculator
 
         public string Percentage()
         {
-            switch (ds)
-            {
-                case DisplayStatus.number:
-                case DisplayStatus.decimalMark:
+            try
+            { 
+                switch (ds)
+                {
+                    case DisplayStatus.number:
+                    case DisplayStatus.decimalMark:
 
-                    decimal d = Convert.ToDecimal(FormulaElements.Last());
-                    int i = FormulaElements.OfType<decimal>().Count();
+                        decimal d = Convert.ToDecimal(FormulaElements.Last());
+                        int i = FormulaElements.OfType<decimal>().Count();
 
-                    if (i < 2) 
-                        return Clear();
-                    else
-                    {
-                        decimal d2 = Convert.ToDecimal(FormulaElements[FormulaElements.Count() - 3]);
-                        d = d2 * d / 100;
-                        FormulaElements.Remove(FormulaElements.Last());
-                        FormulaElements.Add(d);
-                        return d.ToString();
-                    }
+                        if (i < 2) 
+                            return Clear();
+                        else
+                        {
+                            decimal d2 = Convert.ToDecimal(FormulaElements[FormulaElements.Count() - 3]);
+                            d = d2 * d / 100;
+                            FormulaElements.Remove(FormulaElements.Last());
+                            FormulaElements.Add(d);
+                            return d.ToString();
+                        }
 
-                case DisplayStatus.clear:
-                case DisplayStatus.error:
-                case DisplayStatus.operatorX:
-                case DisplayStatus.result:
-                default:
-                    return Clear();
+                    case DisplayStatus.clear:
+                    case DisplayStatus.error:
+                    case DisplayStatus.operatorX:
+                    case DisplayStatus.result:
+                        return FormulaElements.Last().ToString();
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
             }
-            
+
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return null;
+            }
         }
 
         public string SquareRoot()
@@ -379,12 +419,6 @@ namespace Calculator
             {
                 switch (ds)
                 {
-                    case DisplayStatus.clear:
-                    case DisplayStatus.error:
-                    case DisplayStatus.operatorX:
-                    default:
-                        return Clear();
-
                     case DisplayStatus.number:
                     case DisplayStatus.decimalMark:
                     case DisplayStatus.result:
@@ -399,15 +433,20 @@ namespace Calculator
                         else
                             throw new Exception("cannot calculate square root of negative number");
 
+                    case DisplayStatus.clear:
+                    case DisplayStatus.error:
+                    case DisplayStatus.operatorX:
+                        return FormulaElements.Last().ToString();
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
                 }
             }
-            catch(Exception e)
+
+            catch (NotImplementedException e)
             {
-                Console.WriteLine("x");
-                throw e;
-                //Clear();
-                //ds = DisplayStatus.error;
-                //return e.Message;
+                ExceptionHandling(e);
+                return null;
             }
         }
 
@@ -419,24 +458,34 @@ namespace Calculator
 
         private string GetFormulaSymbol(Operators op)
         {
-            switch (op)
+            try
+            { 
+                switch (op)
+                {
+                    case Operators.equals:
+                        return _Equals;
+                    case Operators.plus:
+                        return _Plus;
+                    case Operators.minus:
+                        return _Minus;
+                    case Operators.multiply:
+                        return _Multiply;
+                    case Operators.divide:
+                        return _Divide;
+                    case Operators.percentage:
+                        return _Percentage;
+                    case Operators.squareRoot:
+                        return _SquareRoot;
+                    default:
+                        throw new NotImplementedException
+                            ("Unrecognized Operator value.");
+                }
+            }
+
+            catch (NotImplementedException e)
             {
-                case Operators.equals:
-                    return _Equals;
-                case Operators.plus:
-                    return _Plus;
-                case Operators.minus:
-                    return _Minus;
-                case Operators.multiply:
-                    return _Multiply;
-                case Operators.divide:
-                    return _Divide;
-                case Operators.percentage:
-                    return _Percentage;
-                case Operators.squareRoot:
-                    return _SquareRoot;
-                default:
-                    return "";
+                ExceptionHandling(e);
+                return null;
             }
         }
 
@@ -490,12 +539,16 @@ namespace Calculator
                                     result = result * number;
                                     break;
                                 case Operators.divide:
-                                    result = result / number;
-                                    break;
+                                    if (number == 0)
+                                        throw new DivideByZeroException();
+                                    else
+                                    { 
+                                        result = result / number;
+                                        break;
+                                    }
 
                                 default:
-                                    result = 0;
-                                    break;
+                                    throw new NotImplementedException("Unrecognized Operator value.");
                             }
                         }
 
@@ -516,15 +569,20 @@ namespace Calculator
                     case DisplayStatus.clear:
                     case DisplayStatus.error:
                     default:
-                        return "0";
+                        throw new NotImplementedException("Unrecognized DisplayStatus value.");
                 }
             }
-            catch (System.DivideByZeroException)
+            catch (DivideByZeroException e)
             {
-                Clear();
-                ds = DisplayStatus.error;
-                return "Cannot divide by zero";
+                ExceptionHandling(e);
+                return null;
             }
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return null;
+            }
+
         }
 
         //---------------------------------------------------------------------------------------
@@ -542,29 +600,39 @@ namespace Calculator
 
         public string ClearEntry()
         {
-            switch (ds)
+            try
+            { 
+                switch (ds)
+                {
+                    case DisplayStatus.number:
+                    case DisplayStatus.decimalMark:
+                        if (FormulaElements.OfType<decimal>().Count() > 1)
+                            ds = DisplayStatus.operatorX;
+                        else
+                            ds = DisplayStatus.clear;
+
+                        FormulaElements.Remove(FormulaElements.Last());
+                        return "0";
+
+                    case DisplayStatus.operatorX:
+                        FormulaElements.Remove(FormulaElements.Last());
+                        ds = DisplayStatus.number;
+                        return FormulaElements.Last().ToString();
+
+                    case DisplayStatus.clear:
+                    case DisplayStatus.result:
+                    case DisplayStatus.error:
+                        return 0.ToString();
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
+            }
+
+            catch (NotImplementedException e)
             {
-                case DisplayStatus.number:
-                case DisplayStatus.decimalMark:
-                    if (FormulaElements.OfType<decimal>().Count() > 1)
-                        ds = DisplayStatus.operatorX;
-                    else
-                        ds = DisplayStatus.clear;
-
-                    FormulaElements.Remove(FormulaElements.Last());
-                    return "0";
-
-                case DisplayStatus.operatorX:
-                    FormulaElements.Remove(FormulaElements.Last());
-                    ds = DisplayStatus.number;
-                    return FormulaElements.Last().ToString();
-
-                case DisplayStatus.clear:
-                case DisplayStatus.result:
-                case DisplayStatus.error:
-                default:
-                    ds = DisplayStatus.clear;
-                    return "0";
+                ExceptionHandling(e);
+                return null;
             }
         }
 
@@ -585,67 +653,88 @@ namespace Calculator
         public enum memorySaveMode { save, plus, minus }
         public bool MemorySave(memorySaveMode mf)
         {
-            switch (ds)
-            {
-                case DisplayStatus.number:
-                case DisplayStatus.decimalMark:
-                case DisplayStatus.result:
+            try
+            { 
+                switch (ds)
+                {
+                    case DisplayStatus.number:
+                    case DisplayStatus.decimalMark:
+                    case DisplayStatus.result:
 
-                    if (Convert.ToDecimal(FormulaElements.Last()) == 0m)
-                    {
-                        mem = 0;
-                        return false;
-                    }
-                    else
-                    {
-                        switch (mf)
+                        if (Convert.ToDecimal(FormulaElements.Last()) == 0m)
                         {
-                            case memorySaveMode.save:
-                                mem = Convert.ToDecimal(FormulaElements.Last());
-                                return true;
-                            case memorySaveMode.plus:
-                                mem = mem + Convert.ToDecimal(FormulaElements.Last());
-                                return true;
-                            case memorySaveMode.minus:
-                                mem = mem - Convert.ToDecimal(FormulaElements.Last());
-                                return true;
-                            default:
-                                return true;
+                            mem = 0;
+                            return false;
                         }
-                    }
+                        else
+                        {
+                            switch (mf)
+                            {
+                                case memorySaveMode.save:
+                                    mem = Convert.ToDecimal(FormulaElements.Last());
+                                    return true;
+                                case memorySaveMode.plus:
+                                    mem = mem + Convert.ToDecimal(FormulaElements.Last());
+                                    return true;
+                                case memorySaveMode.minus:
+                                    mem = mem - Convert.ToDecimal(FormulaElements.Last());
+                                    return true;
+                                default:
+                                    throw new NotImplementedException("Unrecognized memory mode");
+                            }
+                        }
 
-                case DisplayStatus.clear:
-                case DisplayStatus.operatorX:
-                case DisplayStatus.error:
-                default:
-                    mem = 0;
-                    return false;
+                    case DisplayStatus.clear:
+                    case DisplayStatus.operatorX:
+                    case DisplayStatus.error:
+                        return false;
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
+            }
+
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return false;
             }
         }
 
         public string MemoryRead()
         {
-            decimal d = mem;
-            switch(ds)
-            {
-                case DisplayStatus.clear:
-                case DisplayStatus.result:
-                case DisplayStatus.decimalMark:
-                case DisplayStatus.number:
-                case DisplayStatus.error:
-                    if (FormulaElements.OfType<decimal>().Any()) FormulaElements.Remove(FormulaElements.Last());
-                    FormulaElements.Add(d);
-                    ds = DisplayStatus.number;
-                    return d.ToString();
+            try
+            { 
+                decimal d = mem;
 
-                case DisplayStatus.operatorX:
-                    FormulaElements.Add(d);
-                    ds = DisplayStatus.number;
-                    return d.ToString();
-                default:
-                    return "error";
+                switch(ds)
+                {
+                    case DisplayStatus.clear:
+                    case DisplayStatus.result:
+                    case DisplayStatus.decimalMark:
+                    case DisplayStatus.number:
+                    case DisplayStatus.error:
+                        if (FormulaElements.OfType<decimal>().Any()) FormulaElements.Remove(FormulaElements.Last());
+                        FormulaElements.Add(d);
+                        ds = DisplayStatus.number;
+                        return d.ToString();
+
+                    case DisplayStatus.operatorX:
+                        FormulaElements.Add(d);
+                        ds = DisplayStatus.number;
+                        return d.ToString();
+
+                    default:
+                        throw new NotImplementedException("Unrecognized display status");
+                }
             }
-            
+
+            catch (NotImplementedException e)
+            {
+                ExceptionHandling(e);
+                return null;
+            }
+
         }
 
         //---------------------------------------------------------------------------------------

@@ -13,6 +13,8 @@ namespace Calculator
     public partial class Calculator : Form
     {
 
+        //==================================
+        #region main
         private calc c = new calc();
 
         public Calculator()
@@ -23,11 +25,22 @@ namespace Calculator
 
         private void ExceptionHandling(Exception e)
         {
-            c.Clear();
             txtResult.Text = e.Message;
             txtFormula.Text = "";
         }
 
+        private void btnEqual_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string result = c.Calculate();
+                UpdateResult(result);
+            }
+            catch (Exception exp)
+            {
+                ExceptionHandling(exp);
+            }
+        }
 
         private void UpdateResult(string result)
         {
@@ -41,9 +54,11 @@ namespace Calculator
                 ExceptionHandling(e);
             }
         }
+        #endregion
+        
 
         //==================================
-        #region buttonclick events Digits
+        #region digits
         //==================================
         private void AddDigit(decimal d)
         {
@@ -110,10 +125,10 @@ namespace Calculator
         }
         //==================================
         #endregion
-        //==================================
+        
 
         //==================================
-        #region buttonclick events Operators
+        #region operators
         //==================================
         private void Operator(calc.Operators o)
         {
@@ -149,25 +164,26 @@ namespace Calculator
         }
         //==================================
         #endregion
-        //==================================
+        
 
         //==================================
-        #region buttonclick events Misc.
-        //==================================
+        #region decimalmark and plus/minus
+
         private void btnDecimalMark_Click(object sender, EventArgs e)
         {
             UpdateResult(c.AddDecimalMark());
-        }
-
-        private void btnEqual_Click(object sender, EventArgs e)
-        {
-            UpdateResult(c.Calculate());
         }
 
         private void btnPlusMinus_Click(object sender, EventArgs e)
         {
             UpdateResult(c.PlusMinus());
         }
+
+        #endregion
+        
+
+        //==================================
+        #region clear(entry) and backspace
 
         private void btnClear_Click(object sender, EventArgs e)
         {
@@ -184,6 +200,13 @@ namespace Calculator
             UpdateResult(c.BackSpace());
         }
 
+        #endregion
+        
+
+        //==================================
+        #region math misc.
+        //==================================
+
         private void btnOneDivideByX_Click(object sender, EventArgs e)
         {
             UpdateResult(c.OneDivideByX());
@@ -196,15 +219,23 @@ namespace Calculator
 
         private void btnSquareRoot_Click(object sender, EventArgs e)
         {
-            UpdateResult(c.SquareRoot());
+            try
+            {
+                string result = c.SquareRoot();
+                UpdateResult(result);
+            }
+            catch (Exception exp)
+            {
+                ExceptionHandling(exp);
+            }
         }
 
         //==================================
         #endregion
-        //==================================
+        
 
         //==================================
-        #region Memory
+        #region memory
         //==================================
 
         private void MemoryStatusUpdate(bool on)
@@ -247,6 +278,7 @@ namespace Calculator
 
         //==================================
         #endregion
-        //==================================
+        
+
     }
 }
