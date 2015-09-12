@@ -38,7 +38,7 @@
             this.btn8 = new System.Windows.Forms.Button();
             this.btn9 = new System.Windows.Forms.Button();
             this.btn0 = new System.Windows.Forms.Button();
-            this.btnDot = new System.Windows.Forms.Button();
+            this.btnDecimalMark = new System.Windows.Forms.Button();
             this.btnEqual = new System.Windows.Forms.Button();
             this.btnPlus = new System.Windows.Forms.Button();
             this.btnMinus = new System.Windows.Forms.Button();
@@ -171,16 +171,16 @@
             this.btn0.UseVisualStyleBackColor = true;
             this.btn0.Click += new System.EventHandler(this.btn0_Click);
             // 
-            // btnDot
+            // btnDecimalMark
             // 
-            this.btnDot.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnDot.Location = new System.Drawing.Point(84, 255);
-            this.btnDot.Name = "btnDot";
-            this.btnDot.Size = new System.Drawing.Size(30, 30);
-            this.btnDot.TabIndex = 10;
-            this.btnDot.Text = ".";
-            this.btnDot.UseVisualStyleBackColor = true;
-            this.btnDot.Click += new System.EventHandler(this.btnDot_Click);
+            this.btnDecimalMark.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDecimalMark.Location = new System.Drawing.Point(84, 255);
+            this.btnDecimalMark.Name = "btnDecimalMark";
+            this.btnDecimalMark.Size = new System.Drawing.Size(30, 30);
+            this.btnDecimalMark.TabIndex = 10;
+            this.btnDecimalMark.Text = ".";
+            this.btnDecimalMark.UseVisualStyleBackColor = true;
+            this.btnDecimalMark.Click += new System.EventHandler(this.btnDecimalMark_Click);
             // 
             // btnEqual
             // 
@@ -423,7 +423,7 @@
             this.Controls.Add(this.btnMinus);
             this.Controls.Add(this.btnPlus);
             this.Controls.Add(this.btnEqual);
-            this.Controls.Add(this.btnDot);
+            this.Controls.Add(this.btnDecimalMark);
             this.Controls.Add(this.btn0);
             this.Controls.Add(this.btn9);
             this.Controls.Add(this.btn8);
@@ -453,7 +453,7 @@
         private System.Windows.Forms.Button btn8;
         private System.Windows.Forms.Button btn9;
         private System.Windows.Forms.Button btn0;
-        private System.Windows.Forms.Button btnDot;
+        private System.Windows.Forms.Button btnDecimalMark;
         private System.Windows.Forms.Button btnEqual;
         private System.Windows.Forms.Button btnPlus;
         private System.Windows.Forms.Button btnMinus;

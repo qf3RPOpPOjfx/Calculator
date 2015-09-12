@@ -154,7 +154,7 @@ namespace Calculator
         //==================================
         #region buttonclick events Misc.
         //==================================
-        private void btnDot_Click(object sender, EventArgs e)
+        private void btnDecimalMark_Click(object sender, EventArgs e)
         {
             UpdateResult(c.AddDecimalMark());
         }
@@ -243,6 +243,7 @@ namespace Calculator
         {
             UpdateResult(c.MemoryRead());
         }
+
 
         //==================================
         #endregion
