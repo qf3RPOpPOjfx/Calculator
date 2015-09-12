@@ -456,39 +456,6 @@ namespace Calculator
         //=======================================================================================
         #region Calculate functions
 
-        private string GetFormulaSymbol(Operators op)
-        {
-            try
-            { 
-                switch (op)
-                {
-                    case Operators.equals:
-                        return _Equals;
-                    case Operators.plus:
-                        return _Plus;
-                    case Operators.minus:
-                        return _Minus;
-                    case Operators.multiply:
-                        return _Multiply;
-                    case Operators.divide:
-                        return _Divide;
-                    case Operators.percentage:
-                        return _Percentage;
-                    case Operators.squareRoot:
-                        return _SquareRoot;
-                    default:
-                        throw new NotImplementedException
-                            ("Unrecognized Operator value.");
-                }
-            }
-
-            catch (NotImplementedException e)
-            {
-                ExceptionHandling(e);
-                return null;
-            }
-        }
-
         private T GetOperatorEnum<T>(object o)
         {
             T enumVal = (T)Enum.Parse(typeof(T), o.ToString());
@@ -504,7 +471,7 @@ namespace Calculator
                 if (o.GetType() == typeof(decimal))
                     s = s + " " + o.ToString();
                 else
-                    s = s + " " + GetFormulaSymbol(GetOperatorEnum<Operators>(o));
+                    s = s + " " + OperatorToString(GetOperatorEnum<Operators>(o));
             }
             return s;
 
