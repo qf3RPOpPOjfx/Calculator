@@ -318,7 +318,7 @@ namespace Calculator
                         else
                         {
                             decimal d2 = Convert.ToDecimal(FormulaElements[FormulaElements.Count() - 3]);
-                            d = d2 * d / 100;
+                            d = Math.Percentage(d2, d);
                             FormulaElements.Remove(FormulaElements.Last());
                             FormulaElements.Add(d);
                             return d.ToString();
@@ -328,7 +328,7 @@ namespace Calculator
                     case DisplayStatus.error:
                     case DisplayStatus.operatorX:
                     case DisplayStatus.result:
-                        return FormulaElements.Last().ToString();
+                        return null;
 
                     default:
                         throw new NotImplementedException("Unrecognized display status");
