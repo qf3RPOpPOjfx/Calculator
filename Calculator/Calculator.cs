@@ -45,8 +45,11 @@ namespace Calculator
         {
             try
             {
-                txtResult.Text = result;
-                txtFormula.Text = c.GetFormula();
+                if (result!= null)
+                { 
+                    txtResult.Text = result;
+                    txtFormula.Text = c.GetFormula();
+                }
             }
             catch (Exception e)
             {

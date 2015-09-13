@@ -173,7 +173,7 @@ namespace Calculator
                     case DisplayStatus.clear:
                     case DisplayStatus.operatorX:
                     case DisplayStatus.error:
-                        return FormulaElements.Last().ToString();
+                        return null;
                     
                     default:
                         throw new NotImplementedException("Unrecognized display status");
@@ -210,7 +210,7 @@ namespace Calculator
             {
                 case DisplayStatus.clear:
                 case DisplayStatus.error:
-                    FormulaElements.Add(0M);
+                    FormulaElements.Add(0m);
                     FormulaElements.Add(o);
                     break;
                 case DisplayStatus.number:
@@ -285,24 +285,20 @@ namespace Calculator
 
             switch (ds)
             {
-                case DisplayStatus.clear:
-                    ds = DisplayStatus.error;
-                    return ErrorCannotDivideByZero;
-
-                case DisplayStatus.operatorX:
-                    return OperatorToString((Operators)FormulaElements.Last());
-
-                case DisplayStatus.error:
-                    return "";
-
                 case DisplayStatus.decimalMark:
                 case DisplayStatus.number:
                 case DisplayStatus.result:
-                    return (1 / Convert.ToDecimal(FormulaElements.Last())).ToString();
+                case DisplayStatus.clear:
+                    return Math.OneDivideByX(Convert.ToDecimal(FormulaElements.Last())).ToString();
 
+                case DisplayStatus.operatorX:
+                case DisplayStatus.error:
+                    return null;
+
+                default:
+                    throw new NotImplementedException("Unrecognized display status");
             }
 
-            return "";
         }
 
         public string Percentage()
