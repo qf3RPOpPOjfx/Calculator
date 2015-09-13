@@ -42,9 +42,7 @@ namespace Calculator
 
             //get last number if available
             if (FormulaElements.OfType<decimal>().Any())
-            {
                 number = Convert.ToDecimal(FormulaElements.Last());
-            }
 
             switch (ds)
             {
@@ -96,28 +94,6 @@ namespace Calculator
             ds = DisplayStatus.number;
             
             return s;
-        }
-
-        private int GetDecimalCount(decimal d)
-        {
-
-            int decimalCount = 0;
-            if (d > 0)
-            {
-                while (d != System.Math.Floor(d))
-                {
-                    d = (d - System.Math.Floor(d)) * 10;
-                    decimalCount++;
-                }
-            }
-            else
-                while (d != System.Math.Ceiling(d))
-                {
-                    d = (d - System.Math.Ceiling(d)) * 10;
-                    decimalCount++;
-                }
-
-            return decimalCount;
         }
 
         private const string DecimalMark = ",";
