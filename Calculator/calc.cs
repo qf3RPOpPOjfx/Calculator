@@ -122,7 +122,7 @@ namespace Calculator
             {
                 case DisplayStatus.clear:
                 case DisplayStatus.error:
-                    d = 0M;
+                    d = 0m;
                     s = d.ToString() + DecimalMark;
                     break;
                 case DisplayStatus.number:
@@ -130,7 +130,7 @@ namespace Calculator
                     s = d.ToString() + DecimalMark;
                     break;
                 case DisplayStatus.operatorX:
-                    d = 0M;
+                    d = 0m;
                     FormulaElements.Add(d);
                     s = d.ToString() + DecimalMark;
                     break;
@@ -139,7 +139,7 @@ namespace Calculator
                     s = d.ToString();
                     break;
                 case DisplayStatus.result:
-                    d = 0M;
+                    d = 0m;
                     FormulaElements.Add(d);
                     s = d.ToString() + DecimalMark;
                     break;
@@ -159,14 +159,12 @@ namespace Calculator
                     case DisplayStatus.number:
                     case DisplayStatus.decimalMark:
                     case DisplayStatus.result:
+
                         decimal d;
                         d = Convert.ToDecimal(FormulaElements.Last());
                         FormulaElements.Remove(FormulaElements.Last());
+                        FormulaElements.Add(Math.AdditiveInverse(d));
 
-                        if (d >= 0)
-                            FormulaElements.Add(-d);
-                        else
-                            FormulaElements.Add(System.Math.Abs(d));
                         if (ds == DisplayStatus.decimalMark)
                             return FormulaElements.Last().ToString() + DecimalMark;
                         else
