@@ -81,12 +81,13 @@ namespace Calculator
                     return System.Math.Ceiling(d / 10);
             else
             {
-                decimal tmp = (d * Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1)));
+                int decimalCount = GetDecimalCount(d);
+                decimal factor = Convert.ToDecimal(System.Math.Pow(10, decimalCount - 1));
 
                 if (d > 0)
-                    return System.Math.Floor(tmp);
+                    return System.Math.Floor(d * factor) / factor;
                 else
-                    return System.Math.Ceiling(tmp);
+                    return System.Math.Ceiling(d * factor) / factor;
             }
         }
 
