@@ -351,21 +351,16 @@ namespace Calculator
                     case DisplayStatus.number:
                     case DisplayStatus.decimalMark:
                     case DisplayStatus.result:
+
                         decimal d = Convert.ToDecimal(FormulaElements.Last());
-                        if (d >= 0)
-                        {
-                            d = Convert.ToDecimal(System.Math.Sqrt(Convert.ToDouble(d)));
-                            FormulaElements.Remove(FormulaElements.Last());
-                            FormulaElements.Add(d);
-                            return d.ToString();
-                        }
-                        else
-                            throw new Exception("cannot calculate square root of negative number");
+                        FormulaElements.Remove(FormulaElements.Last());
+                        FormulaElements.Add(Math.SquareRoot(d));
+                        return d.ToString();
 
                     case DisplayStatus.clear:
                     case DisplayStatus.error:
                     case DisplayStatus.operatorX:
-                        return FormulaElements.Last().ToString();
+                        return null;
 
                     default:
                         throw new NotImplementedException("Unrecognized display status");
