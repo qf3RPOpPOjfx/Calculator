@@ -543,20 +543,7 @@ namespace Calculator
                     case DisplayStatus.number:
                     case DisplayStatus.result:
 
-                        if (GetDecimalCount(d) == 0)
-                            if (d >= 0)
-                                d = System.Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
-                            else
-                                d = System.Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
-                        else
-                        {
-                            if (d > 0)
-                                d = System.Math.Floor(d * Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1)));
-                            else
-                                d = System.Math.Ceiling(d * Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1)));
-
-                        }
-
+                        d = Math.RemoveDigit(d);
                         FormulaElements.Remove(FormulaElements.Last());
                         FormulaElements.Add(d);
                         return d.ToString();
@@ -571,7 +558,7 @@ namespace Calculator
 
                     case DisplayStatus.clear:
                     case DisplayStatus.error:
-                        return FormulaElements.Last().ToString();
+                        return null;
 
                     default:
                         throw new NotImplementedException("Unrecognized display status");
