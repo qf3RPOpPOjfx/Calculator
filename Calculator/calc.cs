@@ -14,6 +14,8 @@ namespace Calculator
 
         private List<object> FormulaElements = new List<object>();
 
+        private int trailingDecimalZeros;
+
         //=======================================================================================
         #region error handling
 
@@ -34,58 +36,65 @@ namespace Calculator
 
         public string AddDigit(decimal d)
         {
-
-            string s;
-            decimal number;
+            string s = "";
+            decimal number = 0m;
+            decimal result = 0m;
 
             //get last number if available
             if (FormulaElements.OfType<decimal>().Any())
             {
                 number = Convert.ToDecimal(FormulaElements.Last());
-                s = FormulaElements.Last().ToString();
-            }
-            else
-            {
-                number = 0m;
-                s = "";
             }
 
             switch (ds)
             {
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
+                    
+                    if (d == 0 && ((number % 1 != 0) || ds == DisplayStatus.decimalMark))
+                        trailingDecimalZeros++;
+
+                    bool AddWithDecimalMark = (ds == DisplayStatus.decimalMark);
+                    result = Math.AddDigit(number, d, AddWithDecimalMark, trailingDecimalZeros);
 
                     FormulaElements.Remove(FormulaElements.Last());
-                    if (ds == DisplayStatus.number)
-                        FormulaElements.Add(Math.AddDigit(number, d));
-                    else
-                        FormulaElements.Add(Math.AddDigit(number, d,true));
-
+                    FormulaElements.Add(result);
                     s = FormulaElements.Last().ToString();
 
+                    if (d != 0)
+                        trailingDecimalZeros = 0;
+
                     // if digit to add is 0...
-                    if (d == 0)
+                    else
                     {
-                        //.. if number contains decimal add "0" 
+                        //.. if number contains decimal add "0" for each trailing decimal zero
                         if ((number % 1 != 0))
-                            s = s + "0";
+                            
+                            for (int i=0 ; i < trailingDecimalZeros; i++)
+                                s = s + "0";
+
                         //... if last input is decimalmark add ",0" 
                         if ((ds == DisplayStatus.decimalMark))
+                        { 
                             s = s + DecimalMark + "0";
+                        }
                     }
 
                     break;
 
+                // in all other cases add digit as new number
                 case DisplayStatus.clear:
                 case DisplayStatus.operatorX:
                 case DisplayStatus.error:
                 case DisplayStatus.result:
+
                     FormulaElements.Add(d);
                     s = FormulaElements.Last().ToString();
                     break;
             }
 
             ds = DisplayStatus.number;
+            
             return s;
         }
 
