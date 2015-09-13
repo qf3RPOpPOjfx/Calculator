@@ -20,7 +20,6 @@ namespace Calculator
         public Calculator()
         {
             InitializeComponent();
-            UpdateResult("0");
         }
 
         private void ExceptionHandling(Exception e)

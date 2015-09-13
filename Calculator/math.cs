@@ -37,7 +37,7 @@ namespace Calculator
 
         #region number editing
 
-        public static decimal AddDigit(decimal d, decimal add, bool AddWithDecimalMark)
+        public static decimal AddDigit(decimal d, decimal digit, bool AddWithDecimalMark = false)
         {
             if (d % 1 == 0)
             //number contains no decimal
@@ -45,27 +45,28 @@ namespace Calculator
                 if (AddWithDecimalMark)
                 {
                     if (d >= 0)
-                        return d + (d / 10);
+                        return d + (digit / 10m);
                     else
-                        return d - (d / 10);
+                        return d - (digit / 10m);
                 }
                 else
                 {
                     if (d > 0)
-                        return (d * 10M) + d;
+                        return (d * 10m) + digit;
                     else
-                        return (d * 10M) - d;
+                        return (d * 10m) - digit;
                 }
             }
             else
             // number contains decimal
             {
-                if (AddWithDecimalMark) throw new Exception("number already contains decimalmark");
-
-                if (d > 0)
-                    return d + (d / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d)))));
+                if (!AddWithDecimalMark)
+                {
+                    decimal decimalToAdd = digit / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d))));
+                    return d + (System.Math.Sign(d) * decimalToAdd);
+                }
                 else
-                    return (d - (d / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d))))));
+                    throw new Exception("number already contains decimalmark");
             }
         }
 

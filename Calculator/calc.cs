@@ -35,69 +35,57 @@ namespace Calculator
         public string AddDigit(decimal d)
         {
 
-            string s="";
-            decimal d1 = 0M;
+            string s;
+            decimal number;
 
-            if (FormulaElements.OfType<decimal>().Any()) d1 = Convert.ToDecimal(FormulaElements.Last());
+            //get last number if available
+            if (FormulaElements.OfType<decimal>().Any())
+            {
+                number = Convert.ToDecimal(FormulaElements.Last());
+                s = FormulaElements.Last().ToString();
+            }
+            else
+            {
+                number = 0m;
+                s = "";
+            }
 
             switch (ds)
             {
-                case DisplayStatus.clear:
-                case DisplayStatus.error:
-                    FormulaElements.Add(d);
-                    s = FormulaElements.Last().ToString();
-                    break;
-
                 case DisplayStatus.number:
-                    FormulaElements.Remove(FormulaElements.Last());
-                    if (d1 % 1==0)
-                    {
-                        if (d1 > 0)
-                            FormulaElements.Add((d1 * 10M) + d);
-                        else
-                            FormulaElements.Add((d1 * 10M) - d);
-
-                        s = FormulaElements.Last().ToString();
-                    }
-                    else
-                    {
-                        if (d1 > 0)
-                            FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d1))))));
-                        else
-                            
-                            FormulaElements.Add(d1 - (d / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d1))))));
-
-                        if (d == 0)
-                            s = FormulaElements.Last().ToString() + "0";
-                        else
-                            s = FormulaElements.Last().ToString();
-                    }
-                    break;
-
-                case DisplayStatus.operatorX:
-                    FormulaElements.Add(d);
-                    s = FormulaElements.Last().ToString();
-                    break;
-
                 case DisplayStatus.decimalMark:
+
                     FormulaElements.Remove(FormulaElements.Last());
-                    if (d1 >= 0)
-                        FormulaElements.Add(d1 + (d / 10));
+                    if (ds == DisplayStatus.number)
+                        FormulaElements.Add(Math.AddDigit(number, d));
                     else
-                        FormulaElements.Add(d1 - (d / 10));
+                        FormulaElements.Add(Math.AddDigit(number, d,true));
 
                     s = FormulaElements.Last().ToString();
+
+                    // if digit to add is 0...
+                    if (d == 0)
+                    {
+                        //.. if number contains decimal add "0" 
+                        if ((number % 1 != 0))
+                            s = s + "0";
+                        //... if last input is decimalmark add ",0" 
+                        if ((ds == DisplayStatus.decimalMark))
+                            s = s + DecimalMark + "0";
+                    }
+
                     break;
 
+                case DisplayStatus.clear:
+                case DisplayStatus.operatorX:
+                case DisplayStatus.error:
                 case DisplayStatus.result:
-                    FormulaElements.Clear();
                     FormulaElements.Add(d);
                     s = FormulaElements.Last().ToString();
                     break;
             }
 
             ds = DisplayStatus.number;
-
             return s;
         }
 
