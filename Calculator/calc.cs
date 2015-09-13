@@ -62,10 +62,10 @@ namespace Calculator
                     else
                     {
                         if (d1 > 0)
-                            FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d1))))));
+                            FormulaElements.Add(d1 + (d / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d1))))));
                         else
                             
-                            FormulaElements.Add(d1 - (d / (10 * System.Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d1))))));
+                            FormulaElements.Add(d1 - (d / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d1))))));
 
                         if (d == 0)
                             s = FormulaElements.Last().ToString() + "0";
@@ -107,16 +107,16 @@ namespace Calculator
             int decimalCount = 0;
             if (d > 0)
             {
-                while (d != Math.Floor(d))
+                while (d != System.Math.Floor(d))
                 {
-                    d = (d - Math.Floor(d)) * 10;
+                    d = (d - System.Math.Floor(d)) * 10;
                     decimalCount++;
                 }
             }
             else
-                while (d != Math.Ceiling(d))
+                while (d != System.Math.Ceiling(d))
                 {
-                    d = (d - Math.Ceiling(d)) * 10;
+                    d = (d - System.Math.Ceiling(d)) * 10;
                     decimalCount++;
                 }
 
@@ -178,7 +178,7 @@ namespace Calculator
                         if (d >= 0)
                             FormulaElements.Add(-d);
                         else
-                            FormulaElements.Add(Math.Abs(d));
+                            FormulaElements.Add(System.Math.Abs(d));
                         if (ds == DisplayStatus.decimalMark)
                             return FormulaElements.Last().ToString() + DecimalMark;
                         else
@@ -372,7 +372,7 @@ namespace Calculator
                         decimal d = Convert.ToDecimal(FormulaElements.Last());
                         if (d >= 0)
                         {
-                            d = Convert.ToDecimal(Math.Sqrt(Convert.ToDouble(d)));
+                            d = Convert.ToDecimal(System.Math.Sqrt(Convert.ToDouble(d)));
                             FormulaElements.Remove(FormulaElements.Last());
                             FormulaElements.Add(d);
                             return d.ToString();
@@ -568,15 +568,15 @@ namespace Calculator
 
                         if (GetDecimalCount(d) == 0)
                             if (d >= 0)
-                                d = Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
+                                d = System.Math.Floor(Convert.ToDecimal(FormulaElements.Last()) / 10);
                             else
-                                d = Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
+                                d = System.Math.Ceiling(Convert.ToDecimal(FormulaElements.Last()) / 10);
                         else
                         {
                             if (d > 0)
-                                d = Math.Floor(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+                                d = System.Math.Floor(d * Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1)));
                             else
-                                d = Math.Ceiling(d * Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(Math.Pow(10, GetDecimalCount(d) - 1)));
+                                d = System.Math.Ceiling(d * Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1))) / (Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d) - 1)));
 
                         }
 
