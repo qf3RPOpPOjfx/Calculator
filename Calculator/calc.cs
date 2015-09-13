@@ -14,7 +14,8 @@ namespace Calculator
 
         private List<object> FormulaElements = new List<object>();
 
-        private int trailingDecimalZeros;
+        private bool numberContainsDecimalMark = false;
+        private int trailingDecimalZeros = 0;
 
         //=======================================================================================
         #region error handling
@@ -44,15 +45,39 @@ namespace Calculator
             if (FormulaElements.OfType<decimal>().Any())
                 number = Convert.ToDecimal(FormulaElements.Last());
 
+
+            switch (ds)
+            {
+                case DisplayStatus.decimalMark:
+                    numberContainsDecimalMark = true;
+                    break;
+
+                case DisplayStatus.number:
+                    break;
+
+                default:
+                    numberContainsDecimalMark = false;
+                    break;
+
+            }
+
             switch (ds)
             {
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
-                    
-                    if (d == 0 && ((number % 1 != 0) || ds == DisplayStatus.decimalMark))
-                        trailingDecimalZeros++;
 
-                    bool AddWithDecimalMark = (ds == DisplayStatus.decimalMark);
+                    //increment trailingDecimalZeros if...
+                    // digit is 0 and...
+                    if (d == 0 &&
+                        // ... number contains decimal
+                        ((number % 1 != 0)
+                        // or number is 0 and numberContainsDecimalMark
+                        || ((number == 0) && numberContainsDecimalMark)
+                        // or DisplayStatus is DecimalMark
+                        || (ds == DisplayStatus.decimalMark)))
+                            trailingDecimalZeros++;
+
+                    bool AddWithDecimalMark = (ds == DisplayStatus.decimalMark) || (numberContainsDecimalMark && trailingDecimalZeros!=0 && (number % 1 == 0));
                     result = Math.AddDigit(number, d, AddWithDecimalMark, trailingDecimalZeros);
 
                     FormulaElements.Remove(FormulaElements.Last());
@@ -86,6 +111,7 @@ namespace Calculator
                 case DisplayStatus.error:
                 case DisplayStatus.result:
 
+                    numberContainsDecimalMark = false;
                     FormulaElements.Add(d);
                     s = FormulaElements.Last().ToString();
                     break;
@@ -470,6 +496,7 @@ namespace Calculator
         public string Clear()
         {
             FormulaElements.Clear();
+            trailingDecimalZeros = 0;
             ds = DisplayStatus.clear;
             return "0";
         }

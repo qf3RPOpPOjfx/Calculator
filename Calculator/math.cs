@@ -48,7 +48,7 @@ namespace Calculator
             if (decimalCount == 0 && !AddWithDecimalMark)
             // number is an integer
 
-                if (trailingDecimalZeros == 0)
+                if (trailingDecimalZeros == 0 || number == 0)
                     return (number * 10m) + (sign * digit);
                 else
                     throw new Exception("Invalid use of parameter trailingDecimalZeros: Number contains no decimal.");
