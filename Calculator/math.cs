@@ -37,37 +37,34 @@ namespace Calculator
 
         #region number editing
 
-        public static decimal AddDigit(decimal d, decimal digit, bool AddWithDecimalMark = false)
+        public static decimal AddDigit(decimal number, decimal digit, bool AddWithDecimalMark = false, int trailingDecimalZeros = 0)
         {
-            if (d % 1 == 0)
-            //number contains no decimal
-            {
-                if (AddWithDecimalMark)
-                {
-                    if (d >= 0)
-                        return d + (digit / 10m);
-                    else
-                        return d - (digit / 10m);
-                }
+
+            int decimalCount = GetDecimalCount(number);
+            decimal factor = System.Convert.ToDecimal(System.Math.Pow(10, 1 + decimalCount + trailingDecimalZeros));
+            int sign = System.Math.Sign(number);
+            decimal decimalToAdd = sign * (digit / factor);
+
+            if (decimalCount == 0 && !AddWithDecimalMark)
+            // number is an integer
+
+                if (trailingDecimalZeros == 0)
+                    return (number * 10m) + (sign * digit);
                 else
-                {
-                    if (d > 0)
-                        return (d * 10m) + digit;
-                    else
-                        return (d * 10m) - digit;
-                }
-            }
+                    throw new Exception("Invalid use of parameter trailingDecimalZeros: Number contains no decimal.");
+
             else
-            // number contains decimal
-            {
-                if (!AddWithDecimalMark)
-                {
-                    decimal decimalToAdd = digit / (10 * System.Convert.ToDecimal(System.Math.Pow(10, GetDecimalCount(d))));
-                    return d + (System.Math.Sign(d) * decimalToAdd);
-                }
+            // number contains decimal || add digit as decimal to integer
+
+                if (!AddWithDecimalMark || decimalCount == 0)
+                    if (digit != 0m)
+                        return number + decimalToAdd;
+                    else
+                    // adding zero after the decimalmark returns the same result
+                        return number;
                 else
-                    throw new Exception("number already contains decimalmark");
-            }
+                    throw new Exception("Invalid use of parameter AddWithDecimalMark: number already contains decimalmark.");
+
         }
 
         public static decimal RemoveDigit(decimal d)
@@ -93,24 +90,28 @@ namespace Calculator
 
         private static int GetDecimalCount(decimal d)
         {
-
-            int decimalCount = 0;
-            if (d > 0)
-            {
-                while (d != System.Math.Floor(d))
-                {
-                    d = (d - System.Math.Floor(d)) * 10;
-                    decimalCount++;
-                }
-            }
+            if (d % 1 == 0)
+                return 0;
             else
-                while (d != System.Math.Ceiling(d))
+            { 
+                int decimalCount = 0;
+                if (d > 0)
                 {
-                    d = (d - System.Math.Ceiling(d)) * 10;
-                    decimalCount++;
+                    while (d != System.Math.Floor(d))
+                    {
+                        d = (d - System.Math.Floor(d)) * 10;
+                        decimalCount++;
+                    }
                 }
+                else
+                    while (d != System.Math.Ceiling(d))
+                    {
+                        d = (d - System.Math.Ceiling(d)) * 10;
+                        decimalCount++;
+                    }
 
-            return decimalCount;
+                return decimalCount;
+            }
         }
 
         #endregion
