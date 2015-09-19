@@ -42,7 +42,9 @@ namespace Calculator
 
             int decimalCount = GetDecimalCount(number);
             decimal factor = System.Convert.ToDecimal(System.Math.Pow(10, 1 + decimalCount + trailingDecimalZeros));
-            int sign = System.Math.Sign(number);
+
+            int sign;
+            if (number >= 0) sign = 1; else sign = -1;
             decimal decimalToAdd = sign * (digit / factor);
 
             if (decimalCount == 0 && !AddWithDecimalMark)

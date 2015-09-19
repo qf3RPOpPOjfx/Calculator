@@ -66,16 +66,9 @@ namespace Calculator
                 case DisplayStatus.number:
                 case DisplayStatus.decimalMark:
 
-                    //increment trailingDecimalZeros if...
-                    // digit is 0 and...
-                    if (d == 0 &&
-                        // ... number contains decimal
-                        ((number % 1 != 0)
-                        // or number is 0 and numberContainsDecimalMark
-                        || ((number == 0) && numberContainsDecimalMark)
-                        // or DisplayStatus is DecimalMark
-                        || (ds == DisplayStatus.decimalMark)))
-                            trailingDecimalZeros++;
+                    //increment trailingDecimalZeros if digit is 0 and number contains DecimalMark
+                    if (d == 0 && numberContainsDecimalMark)
+                        trailingDecimalZeros++;
 
                     bool AddWithDecimalMark = (ds == DisplayStatus.decimalMark) || (numberContainsDecimalMark && trailingDecimalZeros!=0 && (number % 1 == 0));
                     result = Math.AddDigit(number, d, AddWithDecimalMark, trailingDecimalZeros);
@@ -91,15 +84,14 @@ namespace Calculator
                     else
                     {
                         //.. if number contains decimal add "0" for each trailing decimal zero
-                        if ((number % 1 != 0))
-                            
-                            for (int i=0 ; i < trailingDecimalZeros; i++)
-                                s = s + "0";
-
-                        //... if last input is decimalmark add ",0" 
-                        if ((ds == DisplayStatus.decimalMark))
+                        if ((number % 1 != 0) || (AddWithDecimalMark && trailingDecimalZeros!=0))
                         { 
-                            s = s + DecimalMark + "0";
+                            if (AddWithDecimalMark)
+                                s = s + DecimalMark + "0";
+                            else
+                                s = s + "0";
+                            for (int i=0 ; i < trailingDecimalZeros-1; i++)
+                                    s = s + "0";
                         }
                     }
 
