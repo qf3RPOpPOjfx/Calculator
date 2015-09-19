@@ -90,7 +90,7 @@ namespace Calculator
             }
         }
 
-        private static int GetDecimalCount(decimal d)
+        public static int GetDecimalCount(decimal d)
         {
             if (d % 1 == 0)
                 return 0;
